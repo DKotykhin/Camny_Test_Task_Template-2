@@ -1,14 +1,12 @@
 'use client'
 
-// React Imports
-import { useState } from 'react'
-
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 
 // Third-party Imports
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { format } from 'date-fns';
 
 // Type Imports
 import type { DataType } from './studentData'
@@ -25,14 +23,14 @@ const columnHelper = createColumnHelper<DataType>()
 const columns = [
   columnHelper.accessor('id', {
     cell: info => info.getValue(),
-    header: 'ID'
+    header: '#'
   }),
   columnHelper.accessor('fullName', {
     cell: info => info.getValue(),
     header: 'Name'
   }),
   columnHelper.accessor('registration_date', {
-    cell: info => info.getValue(),
+    cell: info => format(new Date(info.getValue()), 'MMMM dd, yyyy'),
     header: 'Date'
   }),
   columnHelper.accessor('city', {
@@ -42,13 +40,14 @@ const columns = [
   columnHelper.accessor('program', {
     cell: info => info.getValue(),
     header: 'Program'
+  }),
+  columnHelper.accessor('view', {
+    cell: info => info.getValue(),
+    header: 'Lessons'
   })
 ]
 
 const StudentTable = () => {
-  // States
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [studentData, setStudentData] = useState(() => [...data])
 
   // Hooks
   const table = useReactTable({
@@ -62,7 +61,7 @@ const StudentTable = () => {
 
   return (
     <Card>
-      <CardHeader title='Student Table' />
+      <CardHeader title='Students Table' />
       <div className='overflow-x-auto'>
         <table className={styles.table}>
           <thead>
@@ -79,7 +78,7 @@ const StudentTable = () => {
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 10)
+              .rows
               .map(row => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map(cell => (
