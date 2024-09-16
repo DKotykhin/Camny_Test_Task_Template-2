@@ -1,24 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Button from '@mui/material/Button'
+import TablePagination from '@mui/material/TablePagination'
 
 // Third-party Imports
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable
+} from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 
 // Type Imports
-import type { Lessons} from '../lessonData';
+import type { Lessons } from '../lessonData'
 import { Status } from '../lessonData'
 
 // Component Imports
 import { ColorStatus } from './ColorStatus'
 import { NewLessonModal } from './NewLessonModal'
+import TablePaginationComponent from '@/components/TablePaginationComponent'
 
 // Style Imports
 import styles from '@core/styles/table.module.css'
@@ -52,7 +60,7 @@ const columns = [
   })
 ]
 
-const LessonTable = ({ data }: { data: LessonsType[] }) => {
+const LessonTable: React.FC<{ data: LessonsType[] }> = ({ data }) => {
   // State
   const [openModal, setOpenModal] = useState(false)
   const [localData, setLocalData] = useState(data)
@@ -64,12 +72,18 @@ const LessonTable = ({ data }: { data: LessonsType[] }) => {
     getCoreRowModel: getCoreRowModel(),
     filterFns: {
       fuzzy: () => false
-    }
+    },
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0
+      }
+    },
+    getPaginationRowModel: getPaginationRowModel()
   })
 
-  const newLessons = (lessons: Record<string, boolean>) => {
-    const newLessons = Object.keys(lessons).filter(key => lessons[key]).map(lesson => lesson as
-    Lessons).map((lesson, index) => {
+  const newLessons = (lessons: Lessons[]) => {
+    const newLessons = lessons.map((lesson, index) => {
       return {
         id: localData.length + index + 1,
         lesson,
@@ -81,7 +95,7 @@ const LessonTable = ({ data }: { data: LessonsType[] }) => {
     const uniqueLessons = newLessons.filter(lesson => !localData.some(t => t.lesson === lesson.lesson))
     const existedLessons = newLessons.filter(lesson => localData.some(t => t.lesson === lesson.lesson))
     if (existedLessons.length) {
-      toast.error(`You already have the following lessons: ${existedLessons.map(lesson => lesson.lesson).join(', ')}`)
+      toast.warn(`You already have the following lessons: ${existedLessons.map(lesson => lesson.lesson).join(', ')}`)
     }
 
     setLocalData([...localData, ...uniqueLessons])
@@ -115,7 +129,7 @@ const LessonTable = ({ data }: { data: LessonsType[] }) => {
             <tbody>
               {table
                 .getRowModel()
-                .rows
+                .rows.slice(0, table.getState().pagination.pageSize)
                 .map(row => (
                   <tr key={row.id}>
                     {row.getVisibleCells().map(cell => (
@@ -127,6 +141,18 @@ const LessonTable = ({ data }: { data: LessonsType[] }) => {
           </table>
         </div>
       </Card>
+      {/* Pagination */}
+      {table.getFilteredRowModel().rows.length > table.getState().pagination.pageSize && (
+        <TablePagination
+          component={() => <TablePaginationComponent table={table as any} shape='circular' />}
+          count={table.getFilteredRowModel().rows.length}
+          rowsPerPage={table.getState().pagination.pageSize}
+          page={table.getState().pagination.pageIndex}
+          onPageChange={(_, page) => {
+            table.setPageIndex(page)
+          }}
+        />
+      )}
     </>
   )
 }

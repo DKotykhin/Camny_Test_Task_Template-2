@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import React from 'react'
 
 // MUI Imports
 import Breadcrumbs from '@mui/material/Breadcrumbs'
@@ -8,7 +8,7 @@ import Link from '@mui/material/Link'
 
 export const LessonBreadcrumbs: React.FC<{ name: string }> = ({ name }) => {
   return (
-    <div role='presentation' className='mb-3'>
+    <div role='presentation' className='mb-4'>
       <Breadcrumbs aria-label='breadcrumb'>
         <Link underline='hover' color='inherit' href='/apps/students'>
           <div className='flex items-center gap-1'>

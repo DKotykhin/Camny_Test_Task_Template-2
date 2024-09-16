@@ -3,10 +3,10 @@ import React from 'react'
 // Third-party Imports
 import classNames from 'classnames'
 
-// Type Imports
+// Data Imports
 import { Status } from '../lessonData'
 
-export const ColorStatus = ({ status }: { status: Status }) => {
+export const ColorStatus: React.FC<{ status: Status }> = ({ status }) => {
   return (
     <div
       className={classNames(

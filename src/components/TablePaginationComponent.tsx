@@ -5,7 +5,15 @@ import Typography from '@mui/material/Typography'
 // Third Party Imports
 import type { useReactTable } from '@tanstack/react-table'
 
-const TablePaginationComponent = ({ table }: { table: ReturnType<typeof useReactTable> }) => {
+type ShapeType = 'rounded' | 'circular'
+
+const TablePaginationComponent = ({
+  table,
+  shape = 'rounded'
+}: {
+  table: ReturnType<typeof useReactTable>
+  shape?: ShapeType
+}) => {
   return (
     <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
       <Typography color='text.disabled'>
@@ -20,7 +28,7 @@ const TablePaginationComponent = ({ table }: { table: ReturnType<typeof useReact
         )} of ${table.getFilteredRowModel().rows.length} entries`}
       </Typography>
       <Pagination
-        shape='rounded'
+        shape={shape}
         color='primary'
         variant='tonal'
         count={Math.ceil(table.getFilteredRowModel().rows.length / table.getState().pagination.pageSize)}
